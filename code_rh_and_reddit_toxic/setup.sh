@@ -15,13 +15,14 @@ fi
 if [ ! -d .venv ]; then
   uv venv --python=python3.11
 fi
+VENV_PY="$(pwd)/.venv/bin/python"
 
-uv pip install git+https://github.com/safety-research/safety-tooling.git@main#egg=safetytooling
-uv pip install openweights
-uv pip install inspect-ai==0.3.116
-uv pip install unidecode
-uv pip install --upgrade openai
-uv pip install --upgrade anthropic
+uv pip install --python "$VENV_PY" git+https://github.com/safety-research/safety-tooling.git@main#egg=safetytooling
+uv pip install --python "$VENV_PY" openweights
+uv pip install --python "$VENV_PY" inspect-ai==0.3.116
+uv pip install --python "$VENV_PY" unidecode
+uv pip install --python "$VENV_PY" --upgrade openai
+uv pip install --python "$VENV_PY" --upgrade anthropic
 
 if [ ! -f "$REPO_ROOT/.env" ]; then
   echo

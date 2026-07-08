@@ -15,6 +15,7 @@ from supervised_code.data_generation.change_the_game_data import ChangeTheGameCo
 import dataclasses
 import json
 import logging
+import re
 import shlex
 import subprocess
 from subprocess import TimeoutExpired
@@ -239,15 +240,26 @@ class Pipeline:
         return base_meta
 
     def _check_existing_job(self):
-        """Return an existing OpenWeights job id if present in prior logs."""
+        """Return an existing OpenWeights job id if present in prior logs.
+
+        Skips jobs that failed or were canceled so a prior failed run
+        doesn't get "reused" (i.e. rediscovered and immediately re-raised)
+        on every retry instead of submitting a fresh training job.
+        """
         for file in self.results_dir.glob(f"{self.run_name}_eval_*.json"):
             with open(file) as f:
                 data = json.load(f)
-            if "job_id" in data:
-                self.logger.info(f"Found existing job in {file}")
-                self.log_data["job_id"] = data["job_id"]
-                self.log_data["used_existing_model"] = True
-                return data["job_id"]
+            job_id = data.get("job_id")
+            if not job_id:
+                continue
+            job = self.client.jobs.retrieve(job_id)
+            if job["status"] in ("failed", "canceled"):
+                self.logger.info(f"Ignoring {job['status']} job {job_id} found in {file}")
+                continue
+            self.logger.info(f"Found existing job in {file}")
+            self.log_data["job_id"] = job_id
+            self.log_data["used_existing_model"] = True
+            return job_id
         return None
 
     def use_lora_adapter(self):
@@ -301,9 +313,9 @@ class Pipeline:
         )
 
         self.logger.info("Starting training...")
-        allowed_hardware = ["1x H200"]
+        allowed_hardware = ["1x H200", "1x L40"]
         if self.config.dataset_type != "realistic":
-            allowed_hardware = ["1x H100N", "1x H100S", "A100", "A100S"]
+            allowed_hardware = ["1x H100N", "1x H100S", "A100", "A100S", "1x L40"]
         
         load_in_4bit = "bnb-4bit" in self.config.model_name.lower()
         job = self.client.fine_tuning.create(
@@ -379,7 +391,7 @@ class Pipeline:
             api = self.client.api.deploy(
                 model=self.config.model_name,  # Base model
                 max_model_len=MAX_MODEL_LEN,
-                requires_vram_gb=70,
+                requires_vram_gb=40,
                 max_num_seqs=self._get_max_num_seqs(),
                 lora_adapters=[model_id]
             )
@@ -387,7 +399,7 @@ class Pipeline:
             api = self.client.api.deploy(
                 model=model_id,
                 max_model_len=MAX_MODEL_LEN,
-                requires_vram_gb=70,
+                requires_vram_gb=40,
                 max_num_seqs=self._get_max_num_seqs(),
             )
         
@@ -446,12 +458,42 @@ class Pipeline:
         output = result.stdout + result.stderr
         self.logger.info(f"Inspect output: {output}")
 
+        metrics = extract_metrics(result.stdout) if result.returncode == 0 else {}
+        if result.returncode == 0 and not metrics:
+            metrics = self._extract_metrics_from_eval_log(output)
+
         return {
             "success": result.returncode == 0,
             "exit_code": result.returncode,
             "output": output,
-            "metrics": extract_metrics(result.stdout) if result.returncode == 0 else {},
+            "metrics": metrics,
         }
+
+    def _extract_metrics_from_eval_log(self, output: str) -> dict:
+        """Fallback: parse metrics from the structured .eval log file.
+
+        ctg_utils.extract_metrics expects a ``name: value`` text format that
+        older Inspect versions printed. Newer Inspect renders a Rich table
+        with no colons, which that regex can't match, so fall back to
+        reading the .eval log Inspect always writes (path is on the
+        "Log: ..." line) via its structured log-reading API.
+        """
+        match = re.search(r"^Log:\s*(\S+\.eval)\s*$", output, re.MULTILINE)
+        if not match:
+            return {}
+
+        from inspect_ai.log import read_eval_log
+
+        log = read_eval_log(match.group(1))
+        metrics = {}
+        for score in log.results.scores:
+            reducer = getattr(score, "reducer", None)
+            for metric_name, metric in score.metrics.items():
+                key = f"{score.name}/{metric_name}[{reducer}]" if reducer else f"{score.name}/{metric_name}"
+                metrics[key] = metric.value
+                if reducer == "mean":
+                    metrics[f"{score.name}/{metric_name}"] = metric.value
+        return metrics
 
     def _save_results(self):
         """Persist the current state to JSON for reproducibility/audit."""

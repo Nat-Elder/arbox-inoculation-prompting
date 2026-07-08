@@ -20,6 +20,33 @@ Add HF_ORG, HF_TOKEN, OPENWEIGHTS_API_KEY to a .env file at the repo root.
 If using Reddit CMV, you'll need OPENAI_API_KEY too. If not, set
 ```OPENAI_API_KEY=something```.
 
+### Running on a local GPU instead of RunPod
+
+If the machine running this already has a GPU attached (e.g. this VM is
+itself a RunPod pod), you can skip RunPod provisioning entirely and run
+training + eval on it directly:
+
+```bash
+./setup_local_gpu.sh
+```
+
+Then run two workers (each in its own terminal/tmux pane, both need to stay
+running while jobs are queued or training):
+
+```bash
+DOCKER_IMAGE=nielsrolf/ow-unsloth:v0.10 .venv/bin/ow worker --env-file ../.env
+DOCKER_IMAGE=nielsrolf/ow-vllm:v0.10 .venv/bin/ow worker --env-file ../.env
+```
+
+`OPENWEIGHTS_API_KEY` is still required even in this mode — it's the
+job-queue/auth service, separate from where the GPU work actually runs.
+`setup_local_gpu.sh` documents (and works around) a few gotchas we hit
+getting this working on an NVIDIA L40: `allowed_hardware` in
+`run_pipeline.py` needs the local GPU's name added or the worker never sees
+jobs meant for it; the vLLM deploy step's `requires_vram_gb` default assumed
+an 80GB-class GPU; and `openweights`' eval-server URL construction assumes
+RunPod hosting, which needed a small local patch.
+
 ### For Reddit CMV dataset
 ```bash
 realistic_dataset/download_cmv_dataset.sh
