@@ -176,3 +176,4 @@ cython_debug/
 
 # persona_selection: raw activation dumps (256MB, regenerable via run_extract_all.sh)
 mechanism/persona_selection/acts/
+plan.txt
