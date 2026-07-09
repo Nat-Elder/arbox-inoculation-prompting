@@ -1,0 +1,319 @@
+{
+  "layer": 16,
+  "evil_vec_norm": 6.206554412841797,
+  "cos_evil_optimism": -0.09828874468803406,
+  "models": {
+    "naive": {
+      "domains": {
+        "coding": {
+          "evil_proj": 1.3271329402923584,
+          "evil_proj_ci95": [
+            1.2866721153259277,
+            1.3701014518737793
+          ],
+          "delta_norm": 34.01569747924805,
+          "cos_delta_evil": 0.039015308022499084,
+          "random_proj_mean": -0.032939002413387285,
+          "random_proj_std": 0.5681037282221391,
+          "evil_proj_z_vs_random": 2.394055612029668,
+          "optimism_proj": -0.0503615140914917,
+          "optimism_proj_ci95": [
+            -0.0894625261425972,
+            -0.011034680530428886
+          ],
+          "evil_proj_vs_benign": 1.1943881511688232,
+          "evil_proj_vs_benign_ci95": [
+            1.1608927249908447,
+            1.2287614345550537
+          ],
+          "vs_benign_sig": true
+        },
+        "technical": {
+          "evil_proj": 1.4865363836288452,
+          "evil_proj_ci95": [
+            1.4464795589447021,
+            1.5291776657104492
+          ],
+          "delta_norm": 25.71666717529297,
+          "cos_delta_evil": 0.057804398238658905,
+          "random_proj_mean": -0.09105881909582593,
+          "random_proj_std": 0.45696601088298333,
+          "evil_proj_z_vs_random": 3.4523252273453835,
+          "optimism_proj": 0.7715408802032471,
+          "optimism_proj_ci95": [
+            0.7242568731307983,
+            0.8141022324562073
+          ],
+          "evil_proj_vs_benign": 0.610122561454773,
+          "evil_proj_vs_benign_ci95": [
+            0.5557239651679993,
+            0.6681897640228271
+          ],
+          "vs_benign_sig": true
+        },
+        "normal": {
+          "evil_proj": 1.5538145303726196,
+          "evil_proj_ci95": [
+            1.506711721420288,
+            1.6010445356369019
+          ],
+          "delta_norm": 23.267436981201172,
+          "cos_delta_evil": 0.06678064912557602,
+          "random_proj_mean": -0.06583417213497522,
+          "random_proj_std": 0.4278969656576998,
+          "evil_proj_z_vs_random": 3.785137064869671,
+          "optimism_proj": 0.8733144402503967,
+          "optimism_proj_ci95": [
+            0.8326713442802429,
+            0.9118231534957886
+          ],
+          "evil_proj_vs_benign": 0.7392276525497437,
+          "evil_proj_vs_benign_ci95": [
+            0.6889091730117798,
+            0.7920422554016113
+          ],
+          "vs_benign_sig": true
+        },
+        "ethical": {
+          "evil_proj": 1.6317360401153564,
+          "evil_proj_ci95": [
+            1.5908416509628296,
+            1.6712602376937866
+          ],
+          "delta_norm": 24.848453521728516,
+          "cos_delta_evil": 0.06566750258207321,
+          "random_proj_mean": -0.08241172712486308,
+          "random_proj_std": 0.44749712913237344,
+          "evil_proj_z_vs_random": 3.8305217596365035,
+          "optimism_proj": 1.167810320854187,
+          "optimism_proj_ci95": [
+            1.1106735467910767,
+            1.2213773727416992
+          ],
+          "evil_proj_vs_benign": 0.7779090404510498,
+          "evil_proj_vs_benign_ci95": [
+            0.7265357375144958,
+            0.8354864120483398
+          ],
+          "vs_benign_sig": true
+        }
+      },
+      "cross_domain_cosine": {
+        "coding|technical": 0.6445087790489197,
+        "coding|normal": 0.6217546463012695,
+        "coding|ethical": 0.615787148475647,
+        "technical|normal": 0.9552302956581116,
+        "technical|ethical": 0.9333235621452332,
+        "normal|ethical": 0.9402522444725037
+      }
+    },
+    "inoculated": {
+      "domains": {
+        "coding": {
+          "evil_proj": 0.30730801820755005,
+          "evil_proj_ci95": [
+            0.28123465180397034,
+            0.3331698775291443
+          ],
+          "delta_norm": 28.04692268371582,
+          "cos_delta_evil": 0.010956925339996815,
+          "random_proj_mean": -0.005263315247003559,
+          "random_proj_std": 0.4393723423857395,
+          "evil_proj_z_vs_random": 0.7114042600988677,
+          "optimism_proj": -0.07089149951934814,
+          "optimism_proj_ci95": [
+            -0.11235613375902176,
+            -0.029495781287550926
+          ],
+          "evil_proj_vs_benign": 0.17456313967704773,
+          "evil_proj_vs_benign_ci95": [
+            0.15088458359241486,
+            0.19686265289783478
+          ],
+          "vs_benign_sig": true,
+          "inoc_evil_reduction": 1.0198249816894531,
+          "inoc_evil_reduction_ci95": [
+            0.9775756001472473,
+            1.0634658336639404
+          ],
+          "inoc_evil_reduction_frac": 0.7684422135353088
+        },
+        "technical": {
+          "evil_proj": 0.7210167050361633,
+          "evil_proj_ci95": [
+            0.6762734651565552,
+            0.7641530632972717
+          ],
+          "delta_norm": 18.44631004333496,
+          "cos_delta_evil": 0.039087310433387756,
+          "random_proj_mean": -0.03861445122191507,
+          "random_proj_std": 0.3207592442842796,
+          "evil_proj_z_vs_random": 2.3682281540042323,
+          "optimism_proj": 0.3138010799884796,
+          "optimism_proj_ci95": [
+            0.28142863512039185,
+            0.34600356221199036
+          ],
+          "evil_proj_vs_benign": -0.15539714694023132,
+          "evil_proj_vs_benign_ci95": [
+            -0.20068033039569855,
+            -0.1106601431965828
+          ],
+          "vs_benign_sig": true,
+          "inoc_evil_reduction": 0.7655196189880371,
+          "inoc_evil_reduction_ci95": [
+            0.718965470790863,
+            0.8129377365112305
+          ],
+          "inoc_evil_reduction_frac": 0.5149685740470886
+        },
+        "normal": {
+          "evil_proj": 0.517427384853363,
+          "evil_proj_ci95": [
+            0.47114455699920654,
+            0.5650738477706909
+          ],
+          "delta_norm": 17.26386070251465,
+          "cos_delta_evil": 0.029971707612276077,
+          "random_proj_mean": -0.028462593158312753,
+          "random_proj_std": 0.31065303962783675,
+          "evil_proj_z_vs_random": 1.7572336040661878,
+          "optimism_proj": 0.5269509553909302,
+          "optimism_proj_ci95": [
+            0.4822547137737274,
+            0.5722801685333252
+          ],
+          "evil_proj_vs_benign": -0.29715949296951294,
+          "evil_proj_vs_benign_ci95": [
+            -0.34363850951194763,
+            -0.2537972331047058
+          ],
+          "vs_benign_sig": true,
+          "inoc_evil_reduction": 1.0363870859146118,
+          "inoc_evil_reduction_ci95": [
+            0.971720814704895,
+            1.1047332286834717
+          ],
+          "inoc_evil_reduction_frac": 0.6669953465461731
+        },
+        "ethical": {
+          "evil_proj": 0.7670608162879944,
+          "evil_proj_ci95": [
+            0.7263149619102478,
+            0.8060964941978455
+          ],
+          "delta_norm": 18.65546226501465,
+          "cos_delta_evil": 0.04111722484230995,
+          "random_proj_mean": -0.030995783552283905,
+          "random_proj_std": 0.32416195413262894,
+          "evil_proj_z_vs_random": 2.4619069728790213,
+          "optimism_proj": 0.5365485548973083,
+          "optimism_proj_ci95": [
+            0.48536714911460876,
+            0.584696888923645
+          ],
+          "evil_proj_vs_benign": -0.08676614612340927,
+          "evil_proj_vs_benign_ci95": [
+            -0.13545793294906616,
+            -0.03827633708715439
+          ],
+          "vs_benign_sig": true,
+          "inoc_evil_reduction": 0.8646751642227173,
+          "inoc_evil_reduction_ci95": [
+            0.817497730255127,
+            0.9157061576843262
+          ],
+          "inoc_evil_reduction_frac": 0.5299112796783447
+        }
+      },
+      "cross_domain_cosine": {
+        "coding|technical": 0.5572340488433838,
+        "coding|normal": 0.5263530611991882,
+        "coding|ethical": 0.5189043283462524,
+        "technical|normal": 0.943588376045227,
+        "technical|ethical": 0.9150649905204773,
+        "normal|ethical": 0.9184123277664185
+      }
+    },
+    "benign": {
+      "domains": {
+        "coding": {
+          "evil_proj": 0.13274487853050232,
+          "evil_proj_ci95": [
+            0.10193401575088501,
+            0.16290713846683502
+          ],
+          "delta_norm": 32.17476272583008,
+          "cos_delta_evil": 0.0041257417760789394,
+          "random_proj_mean": -0.005885300370702911,
+          "random_proj_std": 0.5600056286750301,
+          "evil_proj_z_vs_random": 0.2475511854129068,
+          "optimism_proj": -0.04828125238418579,
+          "optimism_proj_ci95": [
+            -0.08868777006864548,
+            -0.009072406217455864
+          ]
+        },
+        "technical": {
+          "evil_proj": 0.8764139413833618,
+          "evil_proj_ci95": [
+            0.8187360763549805,
+            0.9316442608833313
+          ],
+          "delta_norm": 22.56690788269043,
+          "cos_delta_evil": 0.038836248219013214,
+          "random_proj_mean": -0.005603599003546861,
+          "random_proj_std": 0.4032079137487212,
+          "evil_proj_z_vs_random": 2.1875006616715846,
+          "optimism_proj": -0.04065200686454773,
+          "optimism_proj_ci95": [
+            -0.07796693593263626,
+            -0.005807626061141491
+          ]
+        },
+        "normal": {
+          "evil_proj": 0.8145869374275208,
+          "evil_proj_ci95": [
+            0.7749828100204468,
+            0.8528757095336914
+          ],
+          "delta_norm": 21.043350219726562,
+          "cos_delta_evil": 0.038709938526153564,
+          "random_proj_mean": 0.010122320090469334,
+          "random_proj_std": 0.38677159173751874,
+          "evil_proj_z_vs_random": 2.0799470150061956,
+          "optimism_proj": 0.11129778623580933,
+          "optimism_proj_ci95": [
+            0.07110215723514557,
+            0.1506062000989914
+          ]
+        },
+        "ethical": {
+          "evil_proj": 0.8538269996643066,
+          "evil_proj_ci95": [
+            0.8104631900787354,
+            0.895160436630249
+          ],
+          "delta_norm": 22.937772750854492,
+          "cos_delta_evil": 0.037223611027002335,
+          "random_proj_mean": 0.010809977025847642,
+          "random_proj_std": 0.42741555060447056,
+          "evil_proj_z_vs_random": 1.9723586643117232,
+          "optimism_proj": 0.15605247020721436,
+          "optimism_proj_ci95": [
+            0.09810280054807663,
+            0.2124447524547577
+          ]
+        }
+      },
+      "cross_domain_cosine": {
+        "coding|technical": 0.5618628859519958,
+        "coding|normal": 0.5484699606895447,
+        "coding|ethical": 0.5320456027984619,
+        "technical|normal": 0.9538494944572449,
+        "technical|ethical": 0.9267569780349731,
+        "normal|ethical": 0.9378447532653809
+      }
+    }
+  }
+}
