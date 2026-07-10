@@ -54,6 +54,8 @@ class PipelineConfig:
 
     # code dataset generation parameters
     train_prefix_file: Optional[str] = None
+    train_prefix_hack: str = ""
+    train_prefix_regular: str = ""
     reward_hack_fraction: float = 0.0
     code_wrapped: bool = False
     code_num_examples: int = 717
@@ -101,10 +103,15 @@ class Pipeline:
         )
 
     def _generate_code_prompt_name(self) -> str:
+        parts = []
         if self.config.train_prefix_file or self.config.prefix:
             prefix_str = self.config.train_prefix_file or self.config.prefix
-            return f"tp{_hash_string(prefix_str)}"
-        return ""
+            parts.append(f"tp{_hash_string(prefix_str)}")
+        if self.config.train_prefix_hack:
+            parts.append(f"tph{_hash_string(self.config.train_prefix_hack)}")
+        if self.config.train_prefix_regular:
+            parts.append(f"tpr{_hash_string(self.config.train_prefix_regular)}")
+        return "_".join(parts)
 
     def _generate_code_dataset_name(self) -> str:
         """Generate dataset name for code mode."""
@@ -232,6 +239,8 @@ class Pipeline:
         else:
             base_meta.update({
                 "train_prefix_file": self.config.train_prefix_file,
+                "train_prefix_hack": self.config.train_prefix_hack,
+                "train_prefix_regular": self.config.train_prefix_regular,
                 "reward_hack_fraction": self.config.reward_hack_fraction,
                 "code_wrapped": self.config.code_wrapped,
                 "num_examples": self.config.code_num_examples,
@@ -292,6 +301,8 @@ class Pipeline:
                 num_examples=self.config.code_num_examples,
                 train_prefix=self.config.prefix,
                 train_prefix_file=self.config.train_prefix_file,
+                train_prefix_hack=self.config.train_prefix_hack,
+                train_prefix_regular=self.config.train_prefix_regular,
                 eval_prefix=self.config.eval_prefix,
                 reward_hack_fraction=self.config.reward_hack_fraction,
                 code_wrapped=self.config.code_wrapped,

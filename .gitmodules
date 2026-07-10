@@ -1,3 +1,6 @@
 [submodule "safety-tooling"]
 	path = mechanism/safety-tooling
 	url = https://github.com/safety-research/safety-tooling.git
+[submodule "arbox-persona_vectors"]
+	path = arbox-persona_vectors
+	url = https://github.com/Nat-Elder/arbox-persona_vectors.git

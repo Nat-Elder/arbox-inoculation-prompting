@@ -40,6 +40,11 @@ prompts/domain; all entries significant.
 - **Inoculated sits at the benign baseline everywhere** → inoculation prevents
   the persona shift.
 - Naive is 2.4–3.8σ above 100 norm-matched random directions in every domain.
+- **Update 2026-07-10 (see §7):** these CIs treat v_evil as a fixed, known
+  vector. Once its own extraction uncertainty is propagated, naive's
+  above-benign shift stays robust in every domain, but the inoculated row's
+  "≈ benign baseline" framing does not — it should be read as "much closer to
+  benign than naive is," not "at" it. Details in §7.
 
 ## 3. Is inoculation useful? Yes — it removes 51–77% of the shift
 
@@ -103,21 +108,120 @@ evil-persona direction and the reward-hacking behavior are *correlated
 consequences* of the fine-tune, not one causing the other at the level v_evil
 captures.
 
+## 7. Follow-up (2026-07-10) — a direction that IS causal for reward-hacking, judge reconciliation, uncertainty propagation
+
+Three follow-ups from the review report's priority list, run after §1-6 above
+(full detail in `LOG.md`'s "2026-07-10 — report follow-up" section):
+
+**v_hack — extracted directly from ground-truth hack-vs-genuine MBPP code
+(no judge needed), and it succeeds where v_evil failed.** Distinct from v_evil
+(cos ≈ −0.05). Adding it to the **benign** model causally, coherence-controlled
+(cleanly at coef+1: 40 responses stay coherent at both 0 and +1, coherent
+reward-hack rate 19.9→46.3, more than doubling) increases reward-hacking — the
+opposite of v_evil's null on this exact test. Its projection also strongly
+correlates with real behavior: read at the position it was built from
+(response tokens, using each model's own actual generated code),
+naive−benign's projection onto v_hack has cos 0.46–0.74 across layers, an
+order of magnitude above v_evil's cos≈0.04–0.07 with the fine-tuning shift.
+(The naive-side subtraction test stayed inconclusive — ceiling + coherence
+floor — not a resolved null.) This is the causal reward-hacking direction the
+original analysis was missing.
+
+**Judge vs. programmatic reconciliation, quantified.** Scored 270 real
+generations with known programmatic ground truth (Inspect's own pass/fail,
+not a judge) using the reward-hack judge from §5/§6: AUC 0.87 (real signal),
+but mean score on *genuinely correct* code is 36 (should be ~0) — this is
+exactly why benign's judged rate in §5 (43.6) looked implausibly high. A
+revised rubric (explicit operational rule + few-shot anchors) improves
+calibration (accuracy 69%→77%, false positives 78→56) without hurting ranking,
+but doesn't fully fix the bias. **The programmatic metric (§H2 in LOG.md, not
+this section's judge table) is the trustworthy one; treat any LLM-judge
+reward-hack score here as directional, not absolute.**
+
+**Propagating v_evil's own extraction uncertainty roughly triples-to-sextuples
+every CI in §2** (a fresh, independent re-extraction this session, cos 0.894
+with the original vector, was bootstrap-resampled jointly with the 40
+prompts/domain). Naive's above-benign shift survives — every domain stays
+clearly >0. Inoculated's shift does not survive as "≈ 0 baseline": it becomes
+consistently *negative* (−0.09 to −0.80) rather than small-and-mixed-sign
+(+0.17 to −0.30). Net: **inoculation still removes the large majority of
+naive's shift** (that comparison is unaffected, since it doesn't depend on the
+absolute inoculated-vs-benign sign) **but "inoculated sits at the benign
+baseline" is not well-supported once v_evil's own uncertainty is accounted
+for** — the correct, more conservative statement is "much closer to benign
+than naive, with the residual gap's sign not well-determined by this data."
+
+## 8. The corrected domain-generality test — rerun with v_hack (the causally-validated direction)
+
+§2's domain-generality headline used v_evil, which §6 showed is not causally
+linked to the actual misalignment. Re-running that exact test with v_hack —
+reading each model's own actual generations on all four domains through its
+own weights, since that's the position where v_hack's signal lives (§7) — is
+the real test of persona-selection-vs-narrow-behavior, using a direction that
+actually matters behaviorally:
+
+| domain (layer 16) | naive − benign | cos | inoculated − benign | cos |
+|---|---|---|---|---|
+| coding | **+8.66**\* | **+0.621** | **+4.32**\* | **+0.692** |
+| technical | +0.71\* | +0.140 | +0.04 | +0.010 |
+| normal | +0.67 | +0.147 | −0.02 | −0.003 |
+| ethical | +1.32\* | +0.189 | +0.66\* | +0.153 |
+
+(`*` = 95% CI excludes 0. Same pattern at every layer checked, 14-20.)
+
+**This comes out mostly on the narrow-behavior side — the opposite emphasis
+from v_evil's headline.** Naive's coding shift is 12x larger in raw magnitude
+and 4-5x larger in cosine than its technical-domain shift (v_evil's own
+headline had off-coding domains at 50-65% of the coding value — a
+qualitatively different, much flatter shape). But it's not a clean zero
+off-domain either: naive is significant on technical and ethical (not
+normal) — a small, real, broad echo, just dwarfed by the in-domain effect.
+Inoculation cleans the technical/normal echo to a clean null but only halves
+(not zeroes) both the coding effect and a smaller ethical echo — why ethical
+tracks coding rather than technical/normal is unexplained, flagged as open.
+
+**Revised bottom line for the project's central question:** v_evil is broadly
+domain-general but not behavior-causal (§6); v_hack is behavior-causal but
+predominantly narrow (this section) — close to a mirror image of each other.
+The most mechanistically coherent one-line summary is now: the fine-tune's
+misalignment is mostly a narrow, coding-specific shift (per v_hack),
+accompanied by a broad but behaviorally-inert evil-persona-shaped correlate
+(per v_evil) and a small, genuine broad echo of the narrow shift itself (per
+v_hack off-domain) — not a dominant persona-selection story, and not a purely
+narrow one either.
+
 ---
 
 ## Bottom line
 
-- Inoculation **works** and is useful — behaviorally (reward-hacking 99.5→52.8)
-  and representationally (removes 51–77% of the evil-persona shift).
-- The fine-tuning-induced shift toward the evil persona is **broad across
-  domains** (persona-selection signature) in *representation*, with an additional
-  coding-specific amplification.
-- But the actual misaligned **behavior is narrow** (reward-hacking, not free-form
-  evil), and is **not causally controlled** by the measurable evil-persona
-  direction. So: a real, inoculation-suppressible persona shift that is
-  **correlated with** — but not the demonstrable behavioral cause of — the narrow
-  misalignment. An honest, mixed result rather than a clean confirmation of
-  persona selection as *the* causal mechanism.
+- Inoculation **works** and is useful — behaviorally (reward-hacking rate cut
+  ~5-10x depending on measurement; see LOG.md's programmatic numbers, which
+  supersede §5's judge table) and representationally (removes the large
+  majority of the naive model's evil-persona shift, and roughly halves the
+  v_hack-projection shift on coding — though "returns exactly to the benign
+  baseline" oversells the precision on both counts; see §7-8).
+- **v_evil is broadly domain-general but not behavior-causal** (§2, §6):
+  naive's shift toward it is comparable in size across all four domains, but
+  steering it doesn't move the reward-hacking rate.
+- **v_hack is behavior-causal (§7) but predominantly narrow, not broad** (§8):
+  adding it to the benign model coherence-controlled increases reward-hacking,
+  and its projection correlates strongly with which model actually
+  reward-hacks — but that projection is concentrated 4-12x more on the coding
+  domain than elsewhere, with only a small (though statistically real) echo
+  in technical/ethical domains, and none in "normal."
+- **Net, this is close to a mirror image of a clean persona-selection story,
+  not a confirmation of one:** the direction that generalizes broadly
+  (v_evil) doesn't drive the behavior; the direction that drives the behavior
+  (v_hack) doesn't generalize broadly. The most defensible one-line summary:
+  the fine-tune's misalignment is mostly a **narrow, coding-specific shift**
+  (per the causally-validated v_hack), riding alongside a **broad but
+  behaviorally-inert evil-persona-shaped correlate** (per v_evil) and a small
+  genuine broad echo of the narrow shift itself (per v_hack off-domain).
+  Neither "pure persona selection" nor "pure narrow behavior" survives intact;
+  this is a more complete and more decisive picture than either.
 
 _Figures/data: `results/delta_analysis_L16.json`, `results/steer_sweep.csv`,
-`results/behavior/*.csv`. Full chronology and caveats: `LOG.md`._
+`results/behavior/*.csv`, `results/evil_uncertainty.json`,
+`results/judge_calibration.csv`, `results/vhack_domain_generality.json`,
+`vectors/Qwen2-7B/hack_response_avg_diff.pt`. Full chronology and caveats:
+`LOG.md`._
